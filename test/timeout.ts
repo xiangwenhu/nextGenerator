@@ -1,14 +1,23 @@
-## nextGenerator
-面向next编程思想，封装下一次的调用逻辑，比较经典的场景就是`setTimeout`,`requestAnimationFrame`。
+import { createTimeoutGenerator } from "../index";
 
-调用`next`即进入下一个周期。
 
-## 代码示例
+// const timeoutGenerator = function (cb: Function, interval: number = 1000) {
 
-### setTimeout 
-下面代码：
-每秒调用一次回调函数， 5次后，取消调用。
-```js
+//     let ticket: number;
+//     function execute() {
+//         ticket = setTimeout(cb, interval);
+//     }
+
+//     return {
+//         execute,
+//         cancel: function () {
+//             clearTimeout(ticket);
+//         }
+//     }
+// }
+
+// const nextFactory = new NextGenerator(timeoutGenerator);
+
 const nextFactory = createTimeoutGenerator();
 
 let context = {
@@ -37,4 +46,3 @@ nextFactory.start(function (this: any, next, ...args: any[]) {
     }
 
 }, context, "param1", "param2")
-```
