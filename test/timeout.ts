@@ -1,48 +1,21 @@
 import { createTimeoutGenerator } from "../index";
 
-
-// const timeoutGenerator = function (cb: Function, interval: number = 1000) {
-
-//     let ticket: number;
-//     function execute() {
-//         ticket = setTimeout(cb, interval);
-//     }
-
-//     return {
-//         execute,
-//         cancel: function () {
-//             clearTimeout(ticket);
-//         }
-//     }
-// }
-
-// const nextFactory = new NextGenerator(timeoutGenerator);
-
 const nextFactory = createTimeoutGenerator();
 
 let context = {
-    val: 0
+    counts: 0
 };
 
-let count = 0;
+nextFactory.start(function (this: any, next: Function) {
 
-nextFactory.start(function (this: any, next, ...args: any[]) {
+    context.counts ++;
 
-    count++;
-
-    console.log("time:", Date.now());
-    console.log("this:", this);
-    console.log("args:", ...args);
-    console.log(" ");
-    context.val = count;
-
-    if(count === 5){
-       nextFactory.cancel();
+    console.log("counts", context.counts);
+    if(context.counts > 3){
+        nextFactory.cancel();
     }
+    
+    next();
 
-    if (count < 10) {
-        // next(context, "param1-" + count, "param2-" + count);
-        next(context, "param1-" + count, "param2-" + count);
-    }
+}, context);
 
-}, context, "param1", "param2")

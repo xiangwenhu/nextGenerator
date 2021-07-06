@@ -39,10 +39,10 @@ export default class NextGenerator<T = any> {
         this.status = EnumStatus.initialized;
     }
 
-    next(...args: any[]) {
+    private next(...args: any[]) {
 
         if (this.status === EnumStatus.canceled) {
-            return console.warn("current status is canceled, please call continute method to continue");
+            return console.warn("current status is canceled, please call continue method to continue");
         }
 
         if (this.status === EnumStatus.waiting) {
@@ -62,9 +62,9 @@ export default class NextGenerator<T = any> {
         this.nextInfo.execute(undefined as any);
     }
 
-    execute(this: NextGenerator<T>, cb: Function, context: T, ...args: any[]) {
+    private execute(this: NextGenerator<T>, cb: Function, context: T, ...args: any[]) {
         this.status = EnumStatus.working;
-        cb.apply(context, [this.next.bind(this), context, ...args]);
+        cb.apply(context, [this.next.bind(this), ...args]);
     }
 
     cancel() {
