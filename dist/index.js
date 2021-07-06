@@ -1,4 +1,9 @@
-;
+"use strict";
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
+};
 var EnumStatus;
 (function (EnumStatus) {
     EnumStatus[EnumStatus["uninitialized"] = 0] = "uninitialized";
@@ -32,7 +37,7 @@ var NextGenerator = /** @class */ (function () {
             this.args = args;
         }
         // this.args[0] context
-        var boundFn = (_a = this.execute).bind.apply(_a, [this, this.cb].concat(this.args));
+        var boundFn = (_a = this.execute).bind.apply(_a, __spreadArray([this, this.cb], this.args));
         this.nextInfo = this.generator(boundFn);
         this.status = EnumStatus.waiting;
         this.nextInfo.execute(undefined);
@@ -43,7 +48,7 @@ var NextGenerator = /** @class */ (function () {
             args[_i - 2] = arguments[_i];
         }
         this.status = EnumStatus.working;
-        cb.apply(context, [this.next.bind(this), context].concat(args));
+        cb.apply(context, __spreadArray([this.next.bind(this), context], args));
     };
     NextGenerator.prototype.cancel = function () {
         this.status = EnumStatus.canceled;
@@ -68,12 +73,11 @@ var NextGenerator = /** @class */ (function () {
         this.next();
     };
     NextGenerator.prototype["continue"] = function () {
-        this.status = EnumStatus.canceled;
+        this.status = EnumStatus.initialized;
         this.next();
     };
     return NextGenerator;
 }());
-
 function createRequestAnimationFrameGenerator() {
     var requestAnimationFrameGenerator = function (cb) {
         var ticket;

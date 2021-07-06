@@ -91,7 +91,7 @@ export default class NextGenerator<T = any> {
     }
 
     continue() {
-        this.status = EnumStatus.canceled;
+        this.status = EnumStatus.initialized;
         this.next();
     }
 }
