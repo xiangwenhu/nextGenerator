@@ -22,23 +22,15 @@ import { createStepUpGenerator } from "../index";
 
 const nextFactory = createStepUpGenerator(100);
 
-
-let context = {
-    val: 0
-};
-
 let lastTime = Date.now();
 nextFactory.start(function (this: any, next, ...args: any[]) {
   
     const now = Date.now();
-
 
     console.log("time:", Date.now());
     console.log("costt time", now - lastTime);
     lastTime = now;
     console.log(" ");
 
-    next(context);
-  
-
-}, context, "param1", "param2")
+    next();  
+})
