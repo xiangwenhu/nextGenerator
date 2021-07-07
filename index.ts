@@ -3,7 +3,7 @@ interface Unsubscribe {
 }
 
 interface CallbackFunction<T = any> {
-    (...args: any[]): void
+    (context: T, ...args: any[]): void
 }
 
 interface NextFnInfo<T = any> {
@@ -24,7 +24,7 @@ enum EnumStatus {
     unkown
 }
 
-class NextGenerator<T = any> {
+export default class NextGenerator<T = any> {
 
     private status: EnumStatus = EnumStatus.uninitialized;
     private nextInfo!: NextFnInfo;
@@ -35,26 +35,12 @@ class NextGenerator<T = any> {
     // 下次回调函数的参数
     private args: any[] = [];
 
-
     constructor(private generator: NextFnGenerator) {
         this.status = EnumStatus.initialized;
+        this.next = this.next.bind(this);
     }
 
-    createCallback() {
-        return new Promise((resolve, reject) => {
-            const info = this.generator(this.cb.bind(this.args[0], resolve));
-            info.execute(undefined as any);
-        })
-    }
-
-    cancel() {
-        this.status = EnumStatus.canceled;
-        if (this.nextInfo && typeof this.nextInfo.cancel === "function") {
-            this.nextInfo.cancel();
-        }
-    }
-
-    private async next(...args: any[]) {
+    private next(...args: any[]) {
 
         if (this.status === EnumStatus.canceled) {
             return console.warn("current status is canceled, please call continue method to continue");
@@ -68,11 +54,26 @@ class NextGenerator<T = any> {
             this.args = args;
         }
 
-        while (this.status as any !== EnumStatus.canceled) {
-            await this.createCallback()
-        }
+        // this.args[0] context
+        const boundFn = this.execute.bind(this, this.cb, ...this.args);
+
+        this.nextInfo = this.generator(boundFn);
+
+        this.status = EnumStatus.waiting;
+        this.nextInfo.execute(undefined as any);
     }
 
+    private execute(this: NextGenerator<T>, cb: Function, context: T, ...args: any[]) {
+        this.status = EnumStatus.working;
+        cb.apply(context, [this.next, ...args]);
+    }
+
+    cancel() {
+        this.status = EnumStatus.canceled;
+        if (this.nextInfo && typeof this.nextInfo.cancel === "function") {
+            this.nextInfo.cancel();
+        }
+    }
 
     start(cb: CallbackFunction, ...args: any[]) {
         if (typeof cb === "function") {
@@ -97,9 +98,29 @@ class NextGenerator<T = any> {
 }
 
 
-function createTimeoutGenerator(interval: number = 1000) {
+export function createRequestAnimationFrameGenerator() {
+
+    const requestAnimationFrameGenerator = function (cb: FrameRequestCallback) {
+
+        let ticket: any;
+        function execute() {
+            ticket = window.requestAnimationFrame(cb);
+        }
+
+        return {
+            execute,
+            cancel: function () {
+                cancelAnimationFrame(ticket);
+            }
+        }
+    }
+
+    const factory = new NextGenerator(requestAnimationFrameGenerator);
+    return factory
+}
 
 
+export function createTimeoutGenerator(interval: number = 1000) {
     const timeoutGenerator = function (cb: Function) {
 
         let ticket: number;
@@ -119,3 +140,24 @@ function createTimeoutGenerator(interval: number = 1000) {
     return factory;
 }
 
+
+export function createStepUpGenerator(interval: number = 1000) {
+
+    const stepUpGenerator = function (cb: Function) {
+        let ticket: any;
+        function execute() {
+            interval = interval * 2;
+            ticket = setTimeout(cb, interval);
+        }
+
+        return {
+            execute,
+            cancel: function () {
+                clearTimeout(ticket);
+            }
+        }
+    }
+
+    const factory = new NextGenerator(stepUpGenerator);
+    return factory;
+}

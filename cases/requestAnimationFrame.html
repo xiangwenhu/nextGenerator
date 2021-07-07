@@ -22,7 +22,8 @@
 
     <script>
 
-        let ticket;
+        let ticket; 
+        let count = 0;
 
         const canvasEl = document.getElementById("canvas");
         const ctx = canvasEl.getContext("2d");
@@ -41,7 +42,9 @@
         }
 
         function onRequestAnimationFrame() {
-            drawTime();
+            count++;
+            // drawTime();
+            console.log(count);
             ticket = requestAnimationFrame(onRequestAnimationFrame);
         }
 

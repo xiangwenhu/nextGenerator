@@ -30,6 +30,9 @@
         ctx.fillStyle = "#f00";
         ctx.fillRect(0, 0, 300, 300);
 
+
+        let count = 0;
+
         function drawTime() {
             ctx.clearRect(0, 0, 300, 300);
             ctx.fillStyle = "#f00";
@@ -41,7 +44,9 @@
         }
        
         nextFactory.start((next)=>{
-            drawTime();
+            count++;
+            console.log(count);
+            // drawTime();
             next();
         });
 
