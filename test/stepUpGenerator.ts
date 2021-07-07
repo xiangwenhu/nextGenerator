@@ -1,4 +1,4 @@
-import { createStepUpGenerator } from "../index";
+import { createStepUpGenerator } from "..";
 
 // let interval = 100;
 // const stepUpGenerator = function (cb: Function) {
