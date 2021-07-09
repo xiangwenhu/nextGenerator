@@ -75,14 +75,11 @@ export default class NextGenerator<T = any> {
         }
     }
 
-    start(cb: CallbackFunction, ...args: any[]) {
-        if (typeof cb === "function") {
-            this.cb = cb;
-        }
-
-        if (typeof this.cb !== "function") {
+    start(cb: CallbackFunction, ...args: any[]) {   
+        if (typeof cb !== "function") {
             throw new SyntaxError("param cb must be a function");
         }
+        this.cb = cb;
 
         if (args.length > 0) {
             this.args = args;
@@ -143,11 +140,15 @@ export function createTimeoutGenerator(interval: number = 1000) {
 
 export function createStepUpGenerator(interval: number = 1000) {
 
+
+    let isFirst = true;
+
     const stepUpGenerator = function (cb: Function) {
         let ticket: any;
         function execute() {
-            interval = interval * 2;
+            interval = isFirst ? interval : interval * 2;
             ticket = setTimeout(cb, interval);
+            isFirst = false;
         }
 
         return {
