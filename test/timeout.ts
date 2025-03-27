@@ -1,22 +1,34 @@
-import { createTimeoutGenerator } from "../";
+import { createTimeoutGenerator } from "../src";
 
 const nextFactory = createTimeoutGenerator();
 
-let context = {
-    counts: 0
+interface IContext {
+    count: number
 };
 
-nextFactory.start(function cb(this: any, next: Function, ...args: any[]) {
+nextFactory.addListener(function listener(this: IContext, next, ...args: any[]) {
+    next();
+    console.log("listener1: count", this.count);
+    console.log("listener1: args", ...args);
+});
 
-    context.counts ++;
-
-    console.log("counts", context.counts);
-    console.log("args", ...args);
-    if(context.counts > 3){
-        nextFactory.cancel();
+nextFactory.addListener(function listener2(this: IContext, next, ...args: any[]) {
+    this.count++;
+    console.log("listener2: count", this.count);
+    console.log("listener2: args", ...args);
+    if (this.count >= 3) {
+        return nextFactory.cancel();
     }
-    
-    next(2,3,4,5);
+    next();
+})
 
-}, context, 1, 2, 3, 4);
+nextFactory.start({
+    count: 0
+}, 1, 2, 3, 4);
+
+nextFactory.start({
+    count: 0
+}, 1, 2, 3, 4);
+
+
 
