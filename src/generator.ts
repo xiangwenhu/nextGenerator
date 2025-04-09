@@ -1,7 +1,5 @@
 import NextGenerator from "./NextGenerator"
 
-export { default as NextGenerator } from "./NextGenerator";
-
 export function createRequestAnimationFrameGenerator() {
 
     const generator = function (cb: FrameRequestCallback) {
