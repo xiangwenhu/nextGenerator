@@ -11,25 +11,10 @@
 <body>
 
 
-    <script src="../dist/index.js"></script>
 
-    <script>
-        // const requestAnimationFrameGenerator = function (cb) {
+    <script type="module">
 
-        //     let ticket;
-        //     function execute() {
-        //         ticket = requestAnimationFrame(cb);
-        //     }
-
-        //     return {
-        //         execute,
-        //         cancel: function () {
-        //             cancelAnimationFrame(ticket);
-        //         }
-        //     }
-        // }
-
-        // const nextFactory = new NextFactory(requestAnimationFrameGenerator);
+        import { createRequestAnimationFrameGenerator } from "../dist/index.js"
 
         const nextFactory = createRequestAnimationFrameGenerator();
 

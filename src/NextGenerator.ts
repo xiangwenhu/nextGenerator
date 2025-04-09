@@ -1,12 +1,18 @@
 import { SEventEmitter } from "./SEmitter";
-import { EnumStatus, ListenerFunction, NextFnGenerator, NextFnInfo } from "./types";
+import { EnumStatus, ListenerFunction, NextFnGenerator, NextFnInfo, NextStartFunc } from "./types";
 
-const TypeName = "listener";
+const ListenerTypeName = "listener";
 
-export default class NextGenerator<T = any> {
+const UndefinedContext = void 0;
+
+export default class NextGenerator {
 
     private status: EnumStatus = EnumStatus.uninitialized;
     private nextInfo!: NextFnInfo;
+
+
+    // @ts-ignore
+    private nextFunc: Function;
 
     // 下次回调函数的参数
     private args: any[] = [];
@@ -40,33 +46,38 @@ export default class NextGenerator<T = any> {
         }
 
         this.nextInfo = this.generator(this.nextCallback);
-
         this.status = EnumStatus.waiting;
-        this.nextInfo.next.apply(this.args[0], this.args.slice(1));
+        this.nextInfo.next.apply(UndefinedContext, this.args);
     }
 
     private nextCallback = () => {
         this.status = EnumStatus.working;
         const args = this.args;
-        const context = args[0];
-        const rArgs = [this.next].concat(args.slice(1));
-        this.emitter.emit(TypeName, context, rArgs)
+        const rArgs = [this.next].concat(args);
+
+        this.nextFunc.apply(UndefinedContext, rArgs);
+        this.notify(...args);
         this.status = EnumStatus.initialized;
+    }
+
+
+    private notify(...args: any[]) {
+        this.emitter.emit(ListenerTypeName, UndefinedContext, ...args)
     }
 
     addListener(listener: ListenerFunction) {
         if (!this.checkStatus()) return;
-        this.emitter.on(TypeName, listener)
+        this.emitter.on(ListenerTypeName, listener)
     }
 
     removeListener(listener: ListenerFunction) {
         if (!this.checkStatus()) return;
-        this.emitter.off(TypeName, listener)
+        this.emitter.off(ListenerTypeName, listener)
     }
 
     removeAllListener() {
         if (!this.checkStatus()) return;
-        this.emitter.removeAllListeners(TypeName)
+        this.emitter.removeAllListeners(ListenerTypeName)
     }
 
     cancel() {
@@ -77,9 +88,11 @@ export default class NextGenerator<T = any> {
         }
     }
 
-    start(context?: any, ...args: any[]) {
+    start(nextFunc: NextStartFunc, ...args: any[]) {
         if (!this.checkStatus()) return;
-        this.next(...Array.prototype.slice.call(arguments));
+        this.notify(...args);
+        this.nextFunc = nextFunc;
+        this.next(...args);
     }
 
     continue() {
@@ -91,7 +104,7 @@ export default class NextGenerator<T = any> {
 
     destroy() {
         if (!this.checkStatus()) return;
-        this.emitter.removeAllListeners(TypeName);
+        this.emitter.removeAllListeners(ListenerTypeName);
         // @ts-ignore
         this.emitter = undefined;
         // @ts-ignore

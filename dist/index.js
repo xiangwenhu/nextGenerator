@@ -3,56 +3,72 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.NextGenerator = void 0;
 exports.createRequestAnimationFrameGenerator = createRequestAnimationFrameGenerator;
 exports.createTimeoutGenerator = createTimeoutGenerator;
+exports.createTimeout0Generator = createTimeout0Generator;
 exports.createNextGenerator = createNextGenerator;
-var NextGenerator_1 = __importDefault(require("./NextGenerator"));
+const NextGenerator_1 = __importDefault(require("./NextGenerator"));
+var NextGenerator_2 = require("./NextGenerator");
+Object.defineProperty(exports, "NextGenerator", { enumerable: true, get: function () { return __importDefault(NextGenerator_2).default; } });
 function createRequestAnimationFrameGenerator() {
-    var generator = function (cb) {
-        var ticket;
+    const generator = function (cb) {
+        let ticket;
         function next() {
             ticket = window.requestAnimationFrame(cb);
         }
         return {
-            next: next,
+            next,
             cancel: function () {
                 cancelAnimationFrame(ticket);
             }
         };
     };
-    var factory = new NextGenerator_1.default(generator);
+    const factory = new NextGenerator_1.default(generator);
     return factory;
 }
-function createTimeoutGenerator(interval) {
-    if (interval === void 0) { interval = 1000; }
-    var generator = function (cb) {
-        var ticket;
+function createTimeoutGenerator(interval = 1000) {
+    const generator = function (cb) {
+        let ticket;
         function next() {
             ticket = setTimeout(cb, interval);
         }
         return {
-            next: next,
+            next,
             cancel: function () {
                 clearTimeout(ticket);
             }
         };
     };
-    var factory = new NextGenerator_1.default(generator);
+    const factory = new NextGenerator_1.default(generator);
     return factory;
 }
-function createNextGenerator() {
-    var generator = function (cb) {
-        var ticket;
+function createTimeout0Generator() {
+    const generator = function (cb) {
+        let ticket;
         function next() {
             ticket = setTimeout(cb, 0);
         }
         return {
-            next: next,
+            next,
             cancel: function () {
                 clearTimeout(ticket);
             }
         };
     };
-    var factory = new NextGenerator_1.default(generator);
+    const factory = new NextGenerator_1.default(generator);
+    return factory;
+}
+function createNextGenerator() {
+    const generator = function (cb) {
+        function next() {
+            cb();
+        }
+        return {
+            next,
+            cancel: function () { }
+        };
+    };
+    const factory = new NextGenerator_1.default(generator);
     return factory;
 }

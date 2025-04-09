@@ -1,4 +1,6 @@
-import NextGenerator from "./NextGenerator";
+import NextGenerator from "./NextGenerator"
+
+export { default as NextGenerator } from "./NextGenerator";
 
 export function createRequestAnimationFrameGenerator() {
 
@@ -43,7 +45,7 @@ export function createTimeoutGenerator(interval: number = 1000) {
 }
 
 
-export function createNextTimeout0Generator() {
+export function createTimeout0Generator() {
     const generator = function (cb: Function) {
 
         let ticket: number;

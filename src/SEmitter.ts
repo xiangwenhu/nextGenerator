@@ -31,7 +31,7 @@ export class SEventEmitter {
     public emit(type: string, context: any = undefined, ...args: any[]): void {
         const listeners = this.events[type];
         if (listeners) {
-            listeners.forEach(listener => listener.apply(context, ...args));
+            listeners.forEach(listener => listener.apply(context, Array.from(args)));
         }
     }
 

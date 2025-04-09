@@ -2,21 +2,24 @@ export interface Unsubscribe {
     (): void
 }
 
-export interface ContextFunction<T = any> {
-    (context?: T, ...args: any[]): any
+export interface ListenerFunction {
+    (...args: any[]): void
 }
 
-export interface ListenerFunction {
-    (next: ContextFunction, ...args: any[]): void
-}
+export type NextFunction = ListenerFunction;
 
 export interface NextFnInfo {
     cancel: Unsubscribe
-    next: ContextFunction
+    next: NextFunction
 }
 
 export interface NextFnGenerator {
     (...args: any[]): NextFnInfo;
+}
+
+
+export interface NextStartFunc {
+    (next: NextFunction, ...args: any[]): void
 }
 
 export enum EnumStatus {

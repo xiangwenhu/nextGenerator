@@ -11,30 +11,41 @@
 ```js
 const nextFactory = createTimeoutGenerator();
 
-let context = {
-    val: 0
+interface IContext {
+    count: number
 };
 
-let count = 0;
+nextFactory.addListener(function listener1(ctx: IContext) {
+    console.log(`${new Date().toTimeString()} listener1 count:`, ctx.count)
+})
 
-nextFactory.start(function (this: any, next, ...args: any[]) {
+nextFactory.addListener(function listener2(ctx: IContext) {
+    console.log(`${new Date().toTimeString()} listener2 count:`, ctx.count)
+})
 
-    count++;
+nextFactory.start(function fun(next, ctx: IContext) {
 
-    console.log("time:", Date.now());
-    console.log("this:", this);
-    console.log("args:", ...args);
-    console.log(" ");
-    context.val = count;
-
-    if(count === 5){
-       nextFactory.cancel();
+    ctx.count++
+    if (ctx.count >= 5) {
+        return nextFactory.cancel();
     }
 
-    if (count < 10) {
-        // next(context, "param1-" + count, "param2-" + count);
-        next(context, "param1-" + count, "param2-" + count);
-    }
+    next()
+}, {
+    count: 1
+})
 
-}, context, "param1", "param2")
+
+// 输出:
+// 11:03:24 GMT+0800 (中国标准时间) listener1 count: 1
+// 11:03:24 GMT+0800 (中国标准时间) listener2 count: 1
+// 11:03:25 GMT+0800 (中国标准时间) listener1 count: 2
+// 11:03:25 GMT+0800 (中国标准时间) listener2 count: 2
+// 11:03:26 GMT+0800 (中国标准时间) listener1 count: 3
+// 11:03:26 GMT+0800 (中国标准时间) listener2 count: 3
+// 11:03:27 GMT+0800 (中国标准时间) listener1 count: 4
+// 11:03:27 GMT+0800 (中国标准时间) listener2 count: 4
+// 11:03:28 GMT+0800 (中国标准时间) listener1 count: 5
+// 11:03:28 GMT+0800 (中国标准时间) listener2 count: 5
+
 ```
