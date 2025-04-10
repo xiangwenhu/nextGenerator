@@ -1,10 +1,20 @@
 {
-  "name": "next-generator",
-  "version": "1.0.0",
+  "name": "next-generator-js",
+  "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "type": "commonjs",
   "scripts": {
     "build": "tsc"
+  },
+  "homepage": "https://github.com/xiangwenhu/nextGenerator",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xiangwenhu/nextGenerator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xiangwenhu/nextGenerator/issues"
   },
   "keywords": [],
   "author": "",

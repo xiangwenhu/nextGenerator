@@ -1,9 +1,9 @@
 .vscode
-demos
+cases
 docs
 node_modules
 src
+test
 .gitignore
 todo.md
-rollup.config.js
 tsconfig.json
