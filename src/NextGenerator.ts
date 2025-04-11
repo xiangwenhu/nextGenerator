@@ -1,12 +1,11 @@
 import { SEventEmitter } from "./SEmitter";
-import { EnumStatus, ListenerFunction, NextFnGenerator, NextFnInfo, NextStartFunc } from "./types";
+import { EnumStatus, INextGenerator, INextGeneratorConstructor, ListenerFunction, NextFnGenerator, NextFnInfo, NextStartFunc } from "./types";
 
 const ListenerTypeName = "listener";
 
 const UndefinedContext = void 0;
 
-export default class NextGenerator {
-
+export default class NextGenerator implements INextGenerator {
     private status: EnumStatus = EnumStatus.uninitialized;
     private nextInfo!: NextFnInfo;
 
@@ -31,7 +30,7 @@ export default class NextGenerator {
         return true;
     }
 
-    private next = (...args: any[]) => {
+    private innerNext = (...args: any[]) => {
         if (!this.checkStatus()) return;
         if (this.status === EnumStatus.canceled) {
             return console.warn("current status is cancelled, please call continue method to continue");
@@ -53,11 +52,13 @@ export default class NextGenerator {
     private nextCallback = () => {
         this.status = EnumStatus.working;
         const args = this.args;
-        const rArgs = [this.next].concat(args);
+        const rArgs = [this].concat(args);
 
-        this.nextFunc.apply(UndefinedContext, rArgs);
-        this.notify(...args);
-        this.status = EnumStatus.initialized;
+        Promise.resolve(this.nextFunc.apply(UndefinedContext, rArgs)).then(() => {
+            this.notify(...args);
+            this.status = EnumStatus.initialized;
+        })
+
     }
 
 
@@ -88,19 +89,22 @@ export default class NextGenerator {
         }
     }
 
-    start(nextFunc: NextStartFunc, ...args: any[]) {
+    start(nextFunc: NextStartFunc<NextGenerator>, ...args: any[]) {
         if (!this.checkStatus()) return;
         this.notify(...args);
         this.nextFunc = nextFunc;
-        this.next(...args);
+        this.innerNext(...args);
     }
 
     continue() {
         if (!this.checkStatus()) return;
         this.status = EnumStatus.initialized;
-        this.next();
+        this.innerNext();
     }
 
+    next() {
+        this.innerNext();
+    }
 
     destroy() {
         if (!this.checkStatus()) return;

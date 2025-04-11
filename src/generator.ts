@@ -1,6 +1,6 @@
 import NextGenerator from "./NextGenerator"
 
-export function createRequestAnimationFrameGenerator() {
+export function createRequestAnimationFrame() {
 
     const generator = function (cb: FrameRequestCallback) {
 
@@ -22,7 +22,7 @@ export function createRequestAnimationFrameGenerator() {
 }
 
 
-export function createTimeoutGenerator(interval: number = 1000) {
+export function createTimeout(interval: number = 1000) {
     const generator = function (cb: Function) {
 
         let ticket: number;
@@ -43,7 +43,7 @@ export function createTimeoutGenerator(interval: number = 1000) {
 }
 
 
-export function createTimeout0Generator() {
+export function createTimeout0() {
     const generator = function (cb: Function) {
 
         let ticket: number;
@@ -63,7 +63,7 @@ export function createTimeout0Generator() {
     return factory;
 }
 
-export function createNextGenerator() {
+export function createNext() {
     const generator = function (cb: Function) {
 
         function next() {

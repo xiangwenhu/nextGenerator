@@ -1,29 +1,29 @@
-import { createTimeout0Generator } from "../src";
+import { createTimeout0 } from "../src/index";
 
-const nextFactory = createTimeout0Generator();
+const instance = createTimeout0();
 
 interface IContext {
     count: number
 };
 
-nextFactory.addListener(function listener1(ctx: IContext) {
+instance.addListener(function listener1(ctx: IContext) {
     console.log(`${new Date().toTimeString()} listener1 count:`, ctx.count)
 })
 
-nextFactory.addListener(function listener2(ctx: IContext) {
+instance.addListener(function listener2(ctx: IContext) {
     console.log(`${new Date().toTimeString()} listener2 count:`, ctx.count)
 })
 
-nextFactory.start(function fun(next, ctx: IContext, name: string) {
+instance.start(function fun(ins, ctx: IContext, name: string) {
 
     console.log("name:", name);
     console.log("ctx:", ctx);
     ctx.count++
     if (ctx.count >= 5) {
-        return nextFactory.cancel();
+        return instance.cancel();
     }
 
-    next()
+    ins.next()
 }, {
     count: 1
 }, "tom")

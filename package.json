@@ -1,12 +1,13 @@
 {
   "name": "next-generator-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "type": "commonjs",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "pub": "npm run build && npm publish"
   },
   "homepage": "https://github.com/xiangwenhu/nextGenerator",
   "repository": {

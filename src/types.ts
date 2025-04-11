@@ -1,3 +1,43 @@
+
+export interface INextGeneratorConstructor {
+    new(generator: NextFnGenerator): INextGenerator;
+}
+
+export interface INextGenerator {
+    /**
+     * 添加监听函数
+     */
+    addListener(listener: ListenerFunction): void;
+    /**
+     * 移除监听函数
+     */
+    removeListener(listener: ListenerFunction): void;
+    /**
+     * 移除全部监听函数
+     */
+    removeAllListener(): void;
+    /**
+     * 取消，即暂停
+     */
+    cancel(): void;
+    /**
+     * 开始
+     */
+    start(nextFunc: NextStartFunc<INextGenerator>, ...args: any[]): void;
+    /**
+     * 继续，取消后，可以继续
+     */
+    continue(): void;
+    /**
+     * 进入下一次
+     */
+    next(): void;
+    /**
+     * 销毁
+     */
+    destroy(): void;
+}
+
 export interface Unsubscribe {
     (): void
 }
@@ -18,8 +58,8 @@ export interface NextFnGenerator {
 }
 
 
-export interface NextStartFunc {
-    (next: NextFunction, ...args: any[]): void
+export interface NextStartFunc<T extends INextGenerator> {
+    (ins: T, ...args: any[]): any
 }
 
 export enum EnumStatus {
@@ -32,4 +72,6 @@ export enum EnumStatus {
     destroyed
 }
 
-
+export interface NextGeneratorOptions {
+    
+}
