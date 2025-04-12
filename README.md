@@ -3,6 +3,12 @@
 
 调用`next`即进入下一个周期。
 
+## 特性
+* 内置支持setTimeout
+* 内置支持requestAnimationFrame
+* 内置支持通用nextGenerator
+* 支持自定义
+
 
 ## 实例支持的方法
 ```typescript
@@ -161,4 +167,66 @@ raf.start((ins) => {
 })
 
 </script>
+```
+
+### 自定义
+```typescript
+import NextGenerator from "../src/NextGenerator"
+
+// 每次增加100ms
+export function createStepUp(baseDuration: number = 1000) {
+    // 次数
+    let times = 1;
+
+    const generator = function (cb: Function) {
+
+        let ticket: any;
+        function next() {
+            ticket = setTimeout(cb, times * baseDuration);
+            times++
+        }
+
+        return {
+            next,
+            cancel: function () {
+                clearTimeout(ticket);
+            }
+        }
+    }
+
+    const factory = new NextGenerator(generator);
+    return factory
+}
+
+
+interface IContext {
+    count: number
+};
+
+const instance = createStepUp();
+
+instance.addListener(function (ctx: IContext) {
+    console.log(`${new Date().toTimeString()} count:`, ctx.count)
+})
+
+const ctx = {
+    count: 1
+}
+instance.start((ins, ctx: IContext) => {
+
+    ctx.count++;
+    if (ctx.count >= 5) {
+        return ins.cancel();
+    }
+    ins.next();
+}, ctx)
+
+
+// 输出
+// 22:37:44 GMT+0800 (中国标准时间) count: 1
+// 22:37:45 GMT+0800 (中国标准时间) count: 2
+// 22:37:47 GMT+0800 (中国标准时间) count: 3
+// 22:37:50 GMT+0800 (中国标准时间) count: 4
+// 22:37:54 GMT+0800 (中国标准时间) count: 5
+
 ```
