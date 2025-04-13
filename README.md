@@ -171,7 +171,7 @@ raf.start((ins) => {
 
 ### 自定义
 ```typescript
-import NextGenerator from "../src/NextGenerator"
+import NextGenerator from "next-generator-js"
 
 // 每次增加100ms
 export function createStepUp(baseDuration: number = 1000) {
